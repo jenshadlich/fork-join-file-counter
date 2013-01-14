@@ -1,5 +1,6 @@
 package de.jeha.tools;
 
+import de.jeha.tools.actions.CountFilesAction;
 import jsr166y.forkjoin.ForkJoinExecutor;
 import jsr166y.forkjoin.ForkJoinPool;
 import jsr166y.forkjoin.RecursiveAction;
@@ -76,70 +77,6 @@ public class FileCounter {
         }
 
         return result.intValue();
-    }
-
-    /**
-     * Count files.
-     */
-    private final class CountFilesAction extends RecursiveAction {
-
-        private final String[] files;
-        private final File folder;
-        private AtomicInteger number;
-
-        private CountFilesAction(String[] files, File folder, AtomicInteger number) {
-            super();
-            this.files = files;
-            this.folder = folder;
-            this.number = number;
-        }
-
-        @Override
-        protected void compute() {
-            if (files == null) {
-                return;
-            }
-
-            List<RecursiveAction> tasks = new ArrayList<RecursiveAction>();
-            for (String file : files) {
-                tasks.add(new CountFileAction(file, folder, number));
-            }
-
-            RecursiveAction.forkJoin(tasks);
-        }
-    }
-
-    /**
-     * Count file.
-     */
-    private final class CountFileAction extends RecursiveAction {
-
-        private final String file;
-        private final File folder;
-        private AtomicInteger number;
-
-        private CountFileAction(String file, File folder, AtomicInteger number) {
-            super();
-            this.file = file;
-            this.folder = folder;
-            this.number = number;
-        }
-
-        @Override
-        protected void compute() {
-            File currentFile = new File(folder, file);
-            if (currentFile.isDirectory()) {
-                if (currentFile.canRead()) {
-                    RecursiveAction.forkJoin(new RecursiveAction[]{
-                            new CountFilesAction(currentFile.list(), currentFile, number)
-                    });
-                } else {
-                    LOG.error("Can't read folder: {}", currentFile.getAbsolutePath());
-                }
-            } else {
-                number.incrementAndGet();
-            }
-        }
     }
 
 }
