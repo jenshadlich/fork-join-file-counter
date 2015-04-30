@@ -3,7 +3,6 @@ package de.jeha.tools;
 import de.jeha.tools.actions.CountFilesAction;
 import jsr166y.forkjoin.ForkJoinExecutor;
 import jsr166y.forkjoin.ForkJoinPool;
-import jsr166y.forkjoin.RecursiveAction;
 import org.apache.commons.lang3.time.StopWatch;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
